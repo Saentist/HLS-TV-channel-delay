@@ -6,10 +6,10 @@ https://tvheadend.org/boards/4/topics/32005
 
 ## Service creation
 
-/etc/systemd/system/SERVICE_NAME.service
+/etc/systemd/system/TV_SERVICE_NAME.service
 ```
 [Unit]
-Description=Timeshift Nova TV
+Description=Timeshift TV_SERVICE_NAME
 After=tvheadend.service
 
 [Service]
@@ -23,8 +23,8 @@ WantedBy=default.target
 ## Enable and start service
 ```
 $ sudo systemctl daemon-reload
-$ sudo systemctl enable SERVICE_NAME.service # to enable startup exec
-$ sudo systemctl start SERVICE_NAME.service
+$ sudo systemctl enable TV_SERVICE_NAME.service # to enable startup exec
+$ sudo systemctl start TV_SERVICE_NAME.service
 ```
 ## manual start
 
