@@ -2,7 +2,7 @@
 ###### Solution to make delayed /catchup/ channels with configurable delay time ex. +1h, +6h, +12h +1d etc
 
 as commented in
-https://tvheadend.org/boards/4/topics/32005
+[https://tvheadend.org](https://tvheadend.org/d/5755-howto-catchup-iptv-a-k-a-1-hour-tv-in-work)
 
 ## Service creation
 
