@@ -2,7 +2,7 @@
 
 # Variables
 M3U_PLAYLIST=$1
-SERVICE_TEMPLATE_PATH="/etc/systemd/system/hls_delayer@.service"
+OUTPUT_M3U_PLAYLIST="/path/to/output_playlist.m3u"
 SERVICE_NAME_TEMPLATE="hls_delayer@channel"
 
 # Function to log messages
@@ -15,6 +15,9 @@ if [ ! -f "$M3U_PLAYLIST" ]; then
     log "ERROR: M3U playlist file $M3U_PLAYLIST does not exist."
     exit 1
 fi
+
+# Create output M3U playlist file
+echo "#EXTM3U" > "$OUTPUT_M3U_PLAYLIST"
 
 # Read M3U playlist and start services
 CHANNEL_INDEX=1
@@ -46,8 +49,12 @@ EOF
     sudo systemctl enable "$SERVICE_NAME"
     sudo systemctl start "$SERVICE_NAME"
     
+    # Add entry to output M3U playlist
+    echo "#EXTINF:-1,Channel $CHANNEL_INDEX" >> "$OUTPUT_M3U_PLAYLIST"
+    echo "$CHANNEL_URL" >> "$OUTPUT_M3U_PLAYLIST"
+    
     log "Started service for channel $CHANNEL_INDEX with URL $CHANNEL_URL"
     ((CHANNEL_INDEX++))
 done < "$M3U_PLAYLIST"
 
-log "All services started successfully."
+log "All services started successfully and output M3U playlist created at $OUTPUT_M3U_PLAYLIST."
