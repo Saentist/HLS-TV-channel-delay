@@ -33,6 +33,11 @@ chmod +x hls_delayer.sh
 ./hls_delayer.sh [channel number]
 ```
 
+
+1. Make the script executable: `chmod +x playlist_import.sh`.
+2. Run the script with the M3U playlist file as an argument:
+   `./playlist_import.sh /path/to/your_playlist.m3u`
+
 ## TO DO
 
 - [ ] optimisation and simplification of usage
