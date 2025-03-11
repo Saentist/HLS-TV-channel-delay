@@ -21,6 +21,7 @@ WantedBy=default.target
 ```
 
 ## Enable and start service
+
 ```
 $ sudo systemctl daemon-reload
 $ sudo systemctl enable TV_SERVICE_NAME.service # to enable startup exec
@@ -33,6 +34,8 @@ chmod +x hls_delayer.sh
 ./hls_delayer.sh [channel number]
 ```
 
+## playlist import script
+Imports an M3U playlist, creates and starts services using `hls_delayer.sh`
 
 1. Make the script executable: `chmod +x playlist_import.sh`.
 2. Run the script with the M3U playlist file as an argument:
