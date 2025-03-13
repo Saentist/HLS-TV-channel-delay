@@ -52,3 +52,17 @@ Used for display playlist in browser on any device with support HTML5 with suppo
 ## TO DO
 
 - [ ] optimisation and simplification of usage
+
+1. Integration Plan:
+Integrate XMLTV for EPG Support:
+
+2. XMLTV parsing has been partially implemented in hls_delayer.sh.
+Include Telemetry for Most-Watched Channels:
+
+3. Telemetry logging is partially implemented in hls_delayer.sh.
+Add Timeshift Limit Option:
+
+4. Timeshift limit option is included in hls_delayer.sh.
+Use Comskip for Recordings:
+
+5. Add Comskip integration to hls_delayer.sh.
