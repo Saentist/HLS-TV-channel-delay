@@ -9,10 +9,26 @@ LOG_LEVEL="fatal"
 USER_AGENT="HLS_delayer"
 SERVICE_PROVIDER="TimeShift"
 SERVICE_NAME="NovaTV +1"
+EPG_FILE="/path/to/your_epg.xml"
+TELEMETRY_FILE="/path/to/telemetry.log"
+MAX_TIMESHIFT_HOURS=24  # Maximum timeshift duration in hours
 
 # Function to log messages
 log() {
     echo "[$(date +'%Y-%m-%d %H:%M:%S')] $1"
+}
+
+# Function to update telemetry
+update_telemetry() {
+    local channel=$1
+    echo "$channel" >> "$TELEMETRY_FILE"
+}
+
+# Function to parse XMLTV for EPG
+parse_epg() {
+    local channel_name=$1
+    local epg_info=$(grep -A 5 "<channel id=\"$channel_name\">" "$EPG_FILE")
+    echo "$epg_info"
 }
 
 # Check if the output directory exists
@@ -22,6 +38,16 @@ if [ ! -d "$OUTPUT_DIR" ]; then
 fi
 
 log "Starting HLS delayer for channel $1"
+
+# Update telemetry
+update_telemetry "$SERVICE_NAME"
+
+# Fetch EPG info
+epg_info=$(parse_epg "$SERVICE_NAME")
+log "EPG Info: $epg_info"
+
+# Calculate the maximum number of segments based on the timeshift limit
+HLS_LIST_SIZE=$((MAX_TIMESHIFT_HOURS * 3600 / 10))
 
 # Execute ffmpeg with error handling
 /usr/bin/ffmpeg -reconnect 1 -reconnect_at_eof 1 -reconnect_streamed 1 -reconnect_delay_max 2 -y -nostdin \
@@ -33,8 +59,8 @@ log "Starting HLS delayer for channel $1"
 -metadata service_name="$SERVICE_NAME" \
 -f hls -hls_flags delete_segments \
 -hls_time 10 \
--hls_list_size 360 \
--hls_wrap 361 \
+-hls_list_size $HLS_LIST_SIZE \
+-hls_wrap $((HLS_LIST_SIZE + 1)) \
 -hls_segment_filename $SEGMENT_FILENAME $PLAYLIST_FILENAME
 
 if [ $? -ne 0 ]; then
