@@ -31,6 +31,12 @@ parse_epg() {
     echo "$epg_info"
 }
 
+# Function to run Comskip
+run_comskip() {
+    local video_file=$1
+    /usr/local/bin/comskip "$video_file"
+}
+
 # Check if the output directory exists
 if [ ! -d "$OUTPUT_DIR" ]; then
     log "ERROR: Output directory $OUTPUT_DIR does not exist."
@@ -67,5 +73,10 @@ if [ $? -ne 0 ]; then
     log "ERROR: ffmpeg encountered an error."
     exit 1
 fi
+
+# Run Comskip on the recorded segments
+for segment in $(ls $OUTPUT_DIR/*.ts); do
+    run_comskip "$segment"
+done
 
 log "HLS delayer for channel $1 completed successfully"
