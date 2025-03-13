@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Channel Player with EPG</title>
+    <title>Channel Player with EPG and Comskip</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -82,7 +82,7 @@
     </style>
 </head>
 <body>
-    <h1>Channel List with EPG</h1>
+    <h1>Channel List with EPG and Comskip</h1>
     <ul class="channel-list" id="channel-list">
         <!-- Channel items will be appended here by JavaScript -->
     </ul>
@@ -95,10 +95,13 @@
         </video>
         <br>
         <button id="hbbtv-rewind">Rewind 10 seconds</button>
+        <button id="comskip-skip">Skip Commercial</button>
         <div class="epg-info" id="epg-info"></div>
     </div>
 
     <script>
+        let comskipMarkers = [];
+
         // Function to fetch and parse M3U playlist
         function fetchPlaylist(url) {
             fetch(url)
@@ -133,12 +136,22 @@
                 .catch(error => console.error('Error fetching EPG:', error));
         }
 
+        function fetchComskip(url) {
+            fetch(url.replace('.m3u8', '.edl'))
+                .then(response => response.json())
+                .then(data => {
+                    comskipMarkers = data;
+                })
+                .catch(error => console.error('Error fetching Comskip markers:', error));
+        }
+
         function openPlayer(url, channelName) {
             const videoPlayer = document.getElementById('video-player');
             videoPlayer.src = url;
             document.getElementById('player-popup').classList.add('open');
             document.getElementById('overlay').classList.add('open');
             displayEPG(channelName);
+            fetchComskip(url);
         }
 
         function closePlayer() {
@@ -152,6 +165,15 @@
         function rewind() {
             const videoPlayer = document.getElementById('video-player');
             videoPlayer.currentTime = Math.max(0, videoPlayer.currentTime - 10);
+        }
+
+        function skipCommercial() {
+            const videoPlayer = document.getElementById('video-player');
+            const currentTime = videoPlayer.currentTime;
+            const nextMarker = comskipMarkers.find(marker => marker.start > currentTime);
+            if (nextMarker) {
+                videoPlayer.currentTime = nextMarker.start;
+            }
         }
 
         function displayEPG(channelName) {
@@ -174,8 +196,9 @@
             }
         }
 
-        // Event listener for HBBTV button
+        // Event listeners for buttons
         document.getElementById('hbbtv-rewind').addEventListener('click', rewind);
+        document.getElementById('comskip-skip').addEventListener('click', skipCommercial);
 
         // Fetch and load the M3U playlist
         fetchPlaylist('path/to/your_playlist.m3u');
