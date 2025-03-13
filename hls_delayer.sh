@@ -13,6 +13,9 @@ EPG_FILE="/path/to/your_epg.xml"
 TELEMETRY_FILE="/path/to/telemetry.log"
 MAX_TIMESHIFT_HOURS=24  # Maximum timeshift duration in hours
 
+# Default delay time in seconds (e.g., 1 hour)
+DEFAULT_DELAY_SECONDS=3600
+
 # Function to log messages
 log() {
     echo "[$(date +'%Y-%m-%d %H:%M:%S')] $1"
@@ -37,13 +40,26 @@ run_comskip() {
     /usr/local/bin/comskip "$video_file"
 }
 
+# Function to calculate delay time
+calculate_delay() {
+    local delay_hours=$1
+    echo $((delay_hours * 3600))
+}
+
 # Check if the output directory exists
 if [ ! -d "$OUTPUT_DIR" ]; then
     log "ERROR: Output directory $OUTPUT_DIR does not exist."
     exit 1
 fi
 
-log "Starting HLS delayer for channel $1"
+# Check if a delay time is provided
+if [ -n "$2" ]; then
+    DELAY_SECONDS=$(calculate_delay "$2")
+else
+    DELAY_SECONDS=$DEFAULT_DELAY_SECONDS
+fi
+
+log "Starting HLS delayer for channel $1 with delay of $DELAY_SECONDS seconds"
 
 # Update telemetry
 update_telemetry "$SERVICE_NAME"
