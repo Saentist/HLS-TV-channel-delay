@@ -7,25 +7,30 @@ as commented in
 ## Service creation
 
 /etc/systemd/system/TV_SERVICE_NAME.service
-```
+```ini
 [Unit]
-Description=Timeshift TV_SERVICE_NAME
-After=tvheadend.service
+Description=HLS Delayer Service for %I
+After=network.target
 
 [Service]
-#Type = forking
-ExecStart=/home/hts/hls_delayer.sh 103 &
+Type=simple
+ExecStart=/path/to/hls_delayer.sh %i
+Restart=on-failure
 
 [Install]
-WantedBy=default.target
+WantedBy=multi-user.target
 ```
 
 ## Enable and start service
 
-```
-$ sudo systemctl daemon-reload
-$ sudo systemctl enable TV_SERVICE_NAME.service # to enable startup exec
-$ sudo systemctl start TV_SERVICE_NAME.service
+```bash
+sudo systemctl enable hls_delayer@channel1.service
+sudo systemctl start hls_delayer@channel1.service
+
+sudo systemctl enable hls_delayer@channel2.service
+sudo systemctl start hls_delayer@channel2.service
+
+# Repeat for other channels as needed
 ```
 ## manual start
 
@@ -40,6 +45,9 @@ Imports an M3U playlist, creates and starts services using `hls_delayer.sh`
 1. Make the script executable: `chmod +x playlist_import.sh`.
 2. Run the script with the M3U playlist file as an argument:
    `./playlist_import.sh /path/to/your_playlist.m3u`
+
+## Webpage
+Used for display playlist in browser on any device with support HTML5 with supported A/V codecs
 
 ## TO DO
 
